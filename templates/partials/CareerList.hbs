@@ -4,10 +4,10 @@
                             <i class="fas fa-plus-square"></i>
                         </a>
                     </h3>
-                    
+
                     <table class="item-table">
                         {{#each careers as |career id|}}
-                        <tr class="career-item item" data-item-id="{{career._id}}">
+                        <tr class="career-item item item-name" data-item-id="{{career._id}}">
                             <td data-field="name" class="career-name inline-edit-ce" contenteditable>{{career.name}}</td>
                             <td class="ewhen statfield" style="width:2ch;"><input class="career-rank inline-edit" data-field="data.rank" type="text" value="{{career.data.rank}}" data-dtype="Number" maxwidth='3' size='3' /></td>
                             <!--td style="text-align:right"><i class="fa fa-edit edit-career" data-item-id="{{item._id}}"></i><i style="margin-left:2px; margin-right:2px;" class="fa fa-trash"></i></td-->
@@ -18,5 +18,5 @@
                             </td>
                         </tr>
                         {{/each}}
-                    </table>        
+                    </table>
                 </div>
