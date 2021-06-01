@@ -17,20 +17,20 @@ export class EWActor extends Actor {
       INITIATIVE: "initiative"
   }
 
- 
+
   /**
    * @override
    */
-  
+
   prepareBaseData(){
         super.prepareBaseData();
-   
+
         const actorData = this.data; // actorData is "actor.data.data"
 
        // console.warn("prepareBaseData object: ", actorData);
         const data = actorData.data;
         const flags = actorData.flags;
-        
+
         if (actorData.type === 'character') this._prepareCharacterData(actorData);
         else if (actorData.type === 'vehicle') this._prepareVehicleData(actorData);
     }
@@ -46,13 +46,13 @@ export class EWActor extends Actor {
         var mnd = data.main_attributes.mind.rank;
         var mlf = data.resources.lifeblood.misc_lfb;
         var mre = data.resources.resolve.misc_res;
-       
+
         // console.warn("MRes: ", mre);
         // Initialize derived traits - lifeblood and resolve
         // but not for rabble or toughs!
         if (!data.isRabble && !data.isTough){
         setProperty(actorData, 'data.resources.lifeblood.max', Number(str) + 10 + mlf);
-       
+
         setProperty(actorData, 'data.resources.resolve.max', Number(mnd) + 10 + mre);
         }
 
@@ -65,12 +65,12 @@ export class EWActor extends Actor {
             setProperty(actorData, 'data.resources.lifeblood.max', Number(str)+5);
             setProperty(actorData, 'data.resources.resolve.max', Number(mnd)+5);
         }
-       
+
         let totalLbd = data.resources.lifeblood.regular + data.resources.lifeblood.lasting + data.resources.lifeblood.fatigue;
         let totalRsd = data.resources.resolve.regular + data.resources.resolve.lasting + data.resources.resolve.fatigue;
 
         setProperty(actorData, 'data.resources.lifeblood.value', Math.max(0, data.resources.lifeblood.max - totalLbd));
-    
+
         setProperty(actorData, 'data.resources.resolve.value', Math.max(0, data.resources.resolve.max - totalRsd));
 
         // Calculate priority roll expression based on base info and misc BD/PD bonuses
@@ -98,13 +98,14 @@ export class EWActor extends Actor {
      * Calculate the roll formula for priority rolls based on various character bonuses
      */
     setPriorityRoll() {
+        let dice = game.settings.get("ewhen", "diceType");
         const priority = duplicate(this.data.data.priority_roll);
         var newSuffix;
         let netExtraDice = priority.bd - priority.pd;
 
         netExtraDice < 0 ? newSuffix = "kl2" : newSuffix = priority.suffix;
 
-        let finalFormula = (Number(priority.numDice) + Math.abs(netExtraDice)) + "d6" + newSuffix + "+" + priority.miscMod;
+        let finalFormula = (Number(priority.numDice) + Math.abs(netExtraDice)) + dice.baseDie + newSuffix + "+" + priority.miscMod;
 
         priority.expression = finalFormula;
 
@@ -113,7 +114,7 @@ export class EWActor extends Actor {
         return priority;
 
     }
-    /** 
+    /**
     * Generate a basic Everywhen dice roll
     * Could be refactored out to its own class eventually
     * it's here for easy access to attributes
@@ -146,8 +147,8 @@ export class EWActor extends Actor {
         const resData = duplicate(actorData.data.resources[res]);
         const type = this.data.type;
         var totalDmg = 0;
-        
-        console.warn("HTML passed back: ", html, type); 
+
+        console.warn("HTML passed back: ", html, type);
 
         if (type == "character") {
 
@@ -163,10 +164,10 @@ export class EWActor extends Actor {
             totalDmg = regDmg + fatDmg + lastDmg;
             let currentLb = resData.max - totalDmg;
             resData.value = currentLb;
-            
-                if(totalDmg > resData.max) { 
-                    ui.notifications.error(game.i18n.localize("EW.warnings.damageoverrun")); 
-                } else {  
+
+                if(totalDmg > resData.max) {
+                    ui.notifications.error(game.i18n.localize("EW.warnings.damageoverrun"));
+                } else {
                     actorData.data.resources[res] = resData;
 
                     //  console.log("Actor Data post-update: ", actorData);
@@ -177,12 +178,12 @@ export class EWActor extends Actor {
 
         } else {
 
-           ui.notifications.warn("Not a character"); 
+           ui.notifications.warn("Not a character");
            return;
 
         }
-   
- 
+
+
         // console.log("ResData after math (current,reg,fat,last): ", resData.current, resData.regular, resData.fatigue, resData.lasting);
 
     }
@@ -192,8 +193,8 @@ export class EWActor extends Actor {
         const actorData = duplicate(this.data);
         const resData = duplicate(actorData.data.frame);
         var totalDmg = 0;
-        
-        
+
+
 
             let lastDmg = Number(html.find("#lasting-dmg").val());
             let critDmg = Number(html.find("#crit-dmg").val());
@@ -203,10 +204,10 @@ export class EWActor extends Actor {
             totalDmg = lastDmg;
             let currentLb = resData.max - totalDmg;
             resData.value = currentLb;
-            
-                if(totalDmg > resData.max) { 
-                    ui.notifications.error(game.i18n.localize("EW.warnings.damageoverrun")); 
-                } else {  
+
+                if(totalDmg > resData.max) {
+                    ui.notifications.error(game.i18n.localize("EW.warnings.damageoverrun"));
+                } else {
                     actorData.data.frame = resData;
 
                     //  console.log("Actor Data post-update: ", actorData);
@@ -227,23 +228,23 @@ export class EWActor extends Actor {
 
         console.warn("Updateshield data: ", resData);
         var totalDmg = 0;
-        
+
             let fatDmg = Number(html.find("#fatigue-dmg").val());
             let regDmg = Number(html.find("#regular-dmg").val());
             let lastDmg = Number(html.find("#lasting-dmg").val());
-            
+
 
             resData.regular = regDmg;
             resData.fatigue = fatDmg;
             resData.lasting = lastDmg;
-            
+
             totalDmg = regDmg + fatDmg + lastDmg;
             let currentLb = resData.max - totalDmg;
             resData.value = currentLb;
-            
-                if(totalDmg > resData.max) { 
-                    ui.notifications.error(game.i18n.localize("EW.warnings.damageoverrun")); 
-                } else {  
+
+                if(totalDmg > resData.max) {
+                    ui.notifications.error(game.i18n.localize("EW.warnings.damageoverrun"));
+                } else {
                     actorData.data.resources.shield = resData;
 
                     //  console.log("Actor Data post-update: ", actorData);
@@ -251,7 +252,7 @@ export class EWActor extends Actor {
                     this.update(actorData);
                     this.sheet.render(true);
                 }
-        
+
     }
 
     /**
@@ -263,11 +264,11 @@ export class EWActor extends Actor {
     */
 
     rollAttribute(attr, attr2, isCombat, optStr){
-        
+
         const ma = duplicate(this.data.data.main_attributes);
         const ca = duplicate(this.data.data.combat_attributes);
         const cr = duplicate(this.data.items.filter(function(item) {return item.type == "career"}));
-       
+
         var item = null;
         var itemImg = "";
         var itemName = "";
@@ -292,15 +293,15 @@ export class EWActor extends Actor {
             itemName: itemName,
             item: {},
             actor:this
-          
+
         }
 
         EWDialogHelper.generateRollDialog(CONFIG.ewhen.DIALOG_TYPE.TASK, dialogData);
-      
-       
+
+
     }
 
-    /** 
+    /**
     * @param weapon {Item} - the Item object for the weapon in use
     */
     rollWeaponDamage(weapon) {
@@ -313,13 +314,13 @@ export class EWActor extends Actor {
         var miscMod = 0;
         var attRank = 0;
 
-      
+
 
         let weaponDamage = weaponData.damage;
         let wName = weapon.name;
         let wImg = weapon.img;
         let range = weaponData.range;
-      
+
         baseExpr = weaponDamage.dice;
         addAttr = weaponDamage.add_attribute;
         half = weaponDamage.half_attribute;
@@ -356,8 +357,8 @@ export class EWActor extends Actor {
         }
 
         EWDialogHelper.generateRollDialog(CONFIG.ewhen.DIALOG_TYPE.DAMAGE, dialogData);
-      
-        
+
+
     }
 
     /**
@@ -407,8 +408,8 @@ export class EWActor extends Actor {
             console.log("Value: ", data.resources[res].value);
 
             let adjustedResource = data.resources[res].max - dmgSum;
-            
-        
+
+
             console.log("Value after: ", adjustedResource);
 
             this.data.data.resources[res].value = adjustedResource;
@@ -436,17 +437,17 @@ export class EWActor extends Actor {
                 speaker: ChatMessage.getSpeaker(),
                 content: msg
             });
-            
+
 
 
         });
-        
+
     }
 
-    /** 
-     * Handles updating or removing modifiers derived from traits; considering whether this should not 
+    /**
+     * Handles updating or removing modifiers derived from traits; considering whether this should not
      * just be manual even for initiative
-     * 
+     *
      * @param {Item} item - the trait being handled
      * @param {String} action - whether to update (overwrite) or remove the modifier - this is where it's tricky
      */
@@ -454,16 +455,18 @@ export class EWActor extends Actor {
     applyRemoveTraitModifier (item, action) {
 
         if(item.type == "trait") {
-        
+            let dice = game.settings.get("ewhen", "diceType");
+
             let type = item.type;
             let pmod = item.data.priority_dieMod;
             const adata = duplicate(actor.data.data.priority_roll);
 
-        
+
             if(pmod == "bonus") {
-                adata.expression = "3d6kh2";
+                // expression is: 3d6kh2 for 2d6, 3d12kh2 for 2d12, 4d6kh3 for 3d6
+                adata.expression = `${dice.numberOfDice + 1}${dice.baseDie}kh${dice.numberOfDice}`;
             } else if (type == "trait" && pmod == "penalty") {
-                adata.expression = "3d6kl2";
+                adata.expression = `${dice.numberOfDice + 1}${dice.baseDie}kl${dice.numberOfDice}`;
             }
 
             actor.update({ "data.priority_roll": adata});
@@ -472,7 +475,7 @@ export class EWActor extends Actor {
     }
 
     /**
-     * Handle equipping or unequipping items like armor and shields, and 
+     * Handle equipping or unequipping items like armor and shields, and
      * applying necessary modifiers.
      * @param {Item} item - the item being equipped or unequipped
      * @param {Boolean} equip - if true, the item is being equipped; if false, it's being removed
@@ -482,8 +485,8 @@ export class EWActor extends Actor {
         const ma = ["strength", "agility", "mind", "appeal"];
         const ca = ["melee", "ranged", "defense", "initiative"];
 
-       
-        
+
+
         if(item.type == "armor" && ("equipped" in changed.data)) {
 
             var bonusIsMain;
@@ -536,7 +539,7 @@ export class EWActor extends Actor {
                     console.log("Actor armor bonus: ", actorData.armorbonus);
                 }
             }
-            
+
             actor.update({ "data": actorData});
 
         }

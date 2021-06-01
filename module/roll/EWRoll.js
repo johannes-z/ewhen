@@ -82,8 +82,8 @@ export class EWRoll {
 
         if (totalDiceMods != 0) {
             totalDiceMods > 0 ? diceSuffix = diceSuffix : diceSuffix = "kl2";
-            let diceCount = Math.abs(totalDiceMods) + 2;
-            dice = diceCount + "d6" + diceSuffix;
+            let diceCount = Math.abs(totalDiceMods) + dice.numberOfDice;
+            dice = diceCount + dice.baseDie + diceSuffix;
         }
 
         /*
@@ -251,7 +251,8 @@ export class EWRoll {
 
     rollDice() {
         let expr = this.rollInfo.expr;
-        expr == "none" ? expr = "0d6" : expr = expr;
+        const diceType = game.settings.get("ewhen", "diceType")
+        expr == "none" ? expr = `0${diceType.baseDie}` : expr = expr;
 
         let r = new Roll(expr);
         r.evaluate();
