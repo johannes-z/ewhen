@@ -1,5 +1,6 @@
 import { EWRoll } from "../roll/EWRoll.js";
 import { EWDialogHelper } from "../interaction/EWDialogHelper.js";
+import { DEFAULT_DICE_MODEL, DICE_MODELS } from "../diceModels.js";
 
 export class EWActor extends Actor {
 
@@ -98,14 +99,13 @@ export class EWActor extends Actor {
      * Calculate the roll formula for priority rolls based on various character bonuses
      */
     setPriorityRoll() {
-        let dice = game.settings.get("ewhen", "diceType");
+        const diceType = game.settings.get("ewhen", "diceType");
+        const diceModel = DICE_MODELS[diceType] || DEFAULT_DICE_MODEL
         const priority = duplicate(this.data.data.priority_roll);
-        var newSuffix;
         let netExtraDice = priority.bd - priority.pd;
+        const newSuffix = netExtraDice < 0 ? 'kl2' : priority.suffix
 
-        netExtraDice < 0 ? newSuffix = "kl2" : newSuffix = priority.suffix;
-
-        let finalFormula = (Number(priority.numDice) + Math.abs(netExtraDice)) + dice.baseDie + newSuffix + "+" + priority.miscMod;
+        let finalFormula = (Number(priority.numDice) + Math.abs(netExtraDice)) + diceModel.baseDie + newSuffix + "+" + priority.miscMod;
 
         priority.expression = finalFormula;
 
