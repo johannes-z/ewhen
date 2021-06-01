@@ -51,7 +51,6 @@ export class EWRoll {
     *  Ungainly and awkward, like a 13-year-old
     */
     compileRollInfo() {
-
         var attrVal = 0;
         var comVal = 0;
         var cVal = 0;
@@ -75,15 +74,15 @@ export class EWRoll {
 
         bdNum = Number(this.html.find("#bdice").val());
         pdNum = Number(this.html.find("#pdice").val());
-        let diceSuffix = "kh2";
-        let dice = game.settings.get("ewhen", "diceType");
+        const diceType = game.settings.get("ewhen", "diceType");
+        const diceModel = DICE_MODELS[diceType] || DEFAULT_DICE_MODEL
         totalDiceMods = bdNum - pdNum;
+        const diceSuffix = totalDiceMods > 0 ? "kh2" : "kl2";
 
-
+        let dice = `${diceModel.numberOfDice}${diceModel.baseDie}`
         if (totalDiceMods != 0) {
-            totalDiceMods > 0 ? diceSuffix = diceSuffix : diceSuffix = "kl2";
-            let diceCount = Math.abs(totalDiceMods) + dice.numberOfDice;
-            dice = diceCount + dice.baseDie + diceSuffix;
+            let diceCount = Math.abs(totalDiceMods) + diceModel.numberOfDice;
+            dice = diceCount + diceModel.baseDie + diceSuffix;
         }
 
         /*
