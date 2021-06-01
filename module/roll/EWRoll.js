@@ -89,14 +89,14 @@ export class EWRoll {
         */
 
        if (careerName != "none") {
-            let careers = this.actor.data.items.filter(function(item) {return item.type == "career"});
+            let career = this.actor.data.items
+                .filter(item => item.type == "career")
+                .find(item => item.name == careerName);
 
-            let thisCareer = careers.filter(function(item) { return item.name == careerName});
-
-            let itemId = thisCareer[0]._id;
-
-            cVal = this.actor.getOwnedItem(itemId).data.data.rank;
-
+            if (career) {
+                let itemId = career._id;
+                cVal = this.actor.getOwnedItem(itemId).data.data.rank;
+            }
        }
 
        /*
@@ -121,8 +121,8 @@ export class EWRoll {
        */
 
        let totalMods = baseDiff + Number(othermods);
-       attr == "none" ? attrVal = 0 : attrVal = this.actor.data.data.main_attributes[attr].rank;
-       combat == "none" ? comVal = 0 : comVal = this.actor.data.data.combat_attributes[combat].rank;
+       attrVal = attr == "none" ? 0 : this.actor.data.data.main_attributes[attr].rank;
+       comVal = combat == "none" ? 0 : this.actor.data.data.combat_attributes[combat].rank;
 
        let rollExpr = dice + "+" + attrVal + "+" + comVal + "+" + cVal + "+" + totalMods;
 
@@ -250,7 +250,7 @@ export class EWRoll {
     rollDice() {
         let expr = this.rollInfo.expr;
         const diceModel = getDiceModel(game)
-        expr == "none" ? expr = `0${diceModel.baseDie}` : expr = expr;
+        expr = expr == "none" ? `0${diceModel.baseDie}` : expr;
 
         let r = new Roll(expr);
         r.evaluate();
