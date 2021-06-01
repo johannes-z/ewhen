@@ -1,3 +1,8 @@
+export function getDiceModel (game) {
+  const diceType = game.settings.get("ewhen", "diceType")
+  return DICE_MODELS[diceType] || DEFAULT_DICE_MODEL
+}
+
 export const DICE_MODELS = {
   '2d6': {
     baseDie: 'd6',

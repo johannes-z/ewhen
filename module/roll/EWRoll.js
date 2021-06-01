@@ -7,7 +7,7 @@
 
 import { EWMessageHelper } from "../interaction/EWMessageHelper.js";
 
-import { DICE_MODELS, DEFAULT_DICE_MODEL } from '../diceModels.js'
+import { DICE_MODELS, DEFAULT_DICE_MODEL, getDiceModel } from '../diceModels.js'
 
 export class EWRoll {
 
@@ -74,8 +74,7 @@ export class EWRoll {
 
         bdNum = Number(this.html.find("#bdice").val());
         pdNum = Number(this.html.find("#pdice").val());
-        const diceType = game.settings.get("ewhen", "diceType");
-        const diceModel = DICE_MODELS[diceType] || DEFAULT_DICE_MODEL
+        const diceModel = getDiceModel(game)
         totalDiceMods = bdNum - pdNum;
         const diceSuffix = totalDiceMods > 0 ? "kh2" : "kl2";
 
@@ -250,8 +249,8 @@ export class EWRoll {
 
     rollDice() {
         let expr = this.rollInfo.expr;
-        const diceType = game.settings.get("ewhen", "diceType")
-        expr == "none" ? expr = `0${diceType.baseDie}` : expr = expr;
+        const diceModel = getDiceModel(game)
+        expr == "none" ? expr = `0${diceModel.baseDie}` : expr = expr;
 
         let r = new Roll(expr);
         r.evaluate();
@@ -266,8 +265,7 @@ export class EWRoll {
     */
 
     createChatMessage(tt, isDamage) {
-        const diceType = game.settings.get("ewhen", "diceType")
-        const diceModel = DICE_MODELS[diceType] || DEFAULT_DICE_MODEL
+        const diceModel = getDiceModel(game)
 
         var outcome = "";
         var outcomeClass = "";

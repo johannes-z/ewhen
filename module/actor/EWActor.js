@@ -1,6 +1,6 @@
 import { EWRoll } from "../roll/EWRoll.js";
 import { EWDialogHelper } from "../interaction/EWDialogHelper.js";
-import { DEFAULT_DICE_MODEL, DICE_MODELS } from "../diceModels.js";
+import { getDiceModel } from "../diceModels.js";
 
 export class EWActor extends Actor {
 
@@ -99,8 +99,7 @@ export class EWActor extends Actor {
      * Calculate the roll formula for priority rolls based on various character bonuses
      */
     setPriorityRoll() {
-        const diceType = game.settings.get("ewhen", "diceType");
-        const diceModel = DICE_MODELS[diceType] || DEFAULT_DICE_MODEL
+        const diceModel = getDiceModel(game)
         const priority = duplicate(this.data.data.priority_roll);
         let netExtraDice = priority.bd - priority.pd;
         const newSuffix = netExtraDice < 0 ? 'kl2' : priority.suffix
@@ -455,7 +454,7 @@ export class EWActor extends Actor {
     applyRemoveTraitModifier (item, action) {
 
         if(item.type == "trait") {
-            let dice = game.settings.get("ewhen", "diceType");
+            const diceModel = getDiceModel(game)
 
             let type = item.type;
             let pmod = item.data.priority_dieMod;
@@ -464,9 +463,9 @@ export class EWActor extends Actor {
 
             if(pmod == "bonus") {
                 // expression is: 3d6kh2 for 2d6, 3d12kh2 for 2d12, 4d6kh3 for 3d6
-                adata.expression = `${dice.numberOfDice + 1}${dice.baseDie}kh${dice.numberOfDice}`;
+                adata.expression = `${diceModel.numberOfDice + 1}${diceModel.baseDie}kh${diceModel.numberOfDice}`;
             } else if (type == "trait" && pmod == "penalty") {
-                adata.expression = `${dice.numberOfDice + 1}${dice.baseDie}kl${dice.numberOfDice}`;
+                adata.expression = `${diceModel.numberOfDice + 1}${diceModel.baseDie}kl${diceModel.numberOfDice}`;
             }
 
             actor.update({ "data.priority_roll": adata});

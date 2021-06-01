@@ -1,4 +1,4 @@
-import { DICE_MODELS, DEFAULT_DICE_MODEL } from '../diceModels.js'
+import { DICE_MODELS, DEFAULT_DICE_MODEL, getDiceModel } from '../diceModels.js'
 
 export class EWCombat extends Combat {
 
@@ -25,8 +25,7 @@ export class EWCombat extends Combat {
 
         if(game.settings.get("ewhen", "initType") != "EWhenPriority") { return; }
 
-        const diceType = game.settings.get("ewhen", "diceType")
-        const diceModel = DICE_MODELS[diceType] || DEFAULT_DICE_MODEL
+        const diceModel = getDiceModel(game)
 
         var adjInit = 0;
         var isPC;
